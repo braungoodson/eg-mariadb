@@ -7,7 +7,7 @@ var express = require('express'),
 
 maria
   .connect({
-    host: '54.187.172.251',
+    host: 'localhost',
     user: 'root',
     password: 'root',
     db: 'mysql'
@@ -27,3 +27,30 @@ maria
 server.use('/', express.static(staticRoot));
 server.listen(port);
 console.log('http://localhost:'+port);
+var results = [];
+  maria
+    .query('select user, host, password from user;')
+    .on('result',onResultHandler)
+    .on('end',onEndHandler)
+  ;
+  function onResultHandler (result) {
+    result
+      .on('row',onRowHandler)
+      .on('error',onErrorHandler)
+      .on('end',onEndHandler)
+    ;
+    function onRowHandler (row) {
+      console.log(row);
+  results.push(row);
+    }
+    function onErrorHandler (error) {
+      console.log(error);
+    }
+    function onEndHandler (end) {
+      console.log(end);
+    }
+  }
+  function onEndHandler (end) {
+    console.log('end',end);
+  console.log(results);
+  }
